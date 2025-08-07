@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vidushi Vashishth | Business Analyst & Developer</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230a192f'/%3E%3Ctext x='50' y='68' font-size='50' font-family='Poppins, sans-serif' font-weight='700' fill='%2364ffda' text-anchor='middle'%3EVV%3C/text%3E%3C/svg%3E">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Three.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #0a192f; /* Dark Navy */
+            color: #ccd6f6; /* Light Slate */
+            transition: opacity 0.5s ease-out;
+        }
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; /* Place it behind all content */
+        }
+        html {
+            scroll-snap-type: y mandatory;
+        }
+        .scroll-section {
+            scroll-snap-align: start;
+        }
+        .accent-color {
+            color: #64ffda; /* Bright Aqua/Teal */
+        }
+        .bg-accent {
+            background-color: #64ffda;
+        }
+        .border-accent {
+            border-color: #64ffda;
+        }
+        .nav-link {
+            transition: color 0.3s;
+        }
+        .nav-link:hover {
+            color: #64ffda;
+        }
+        .section-heading::after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 2px;
+            background: #64ffda;
+            margin-top: 8px;
+        }
+        .project-card {
+            background-color: #112240; /* Lighter Navy */
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 10px 30px -15px rgba(2,12,27,0.7);
+        }
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 30px -15px rgba(2,12,27,0.7);
+        }
+        .skill-tag {
+             background-color: #112240;
+             color: #64ffda;
+             padding: 4px 12px;
+             border-radius: 16px;
+             font-size: 0.875rem;
+             font-weight: 600;
+        }
+        /* Modal Styles */
+        .modal-overlay {
+            background-color: rgba(10, 25, 47, 0.8);
+            backdrop-filter: blur(4px);
+        }
+        .modal-content {
+            background-color: #112240;
+        }
+        #scroll-indicator {
+            cursor: pointer;
+        }
+        /* 3D Canvas Container */
+        #three-container {
+            width: 100%;
+            height: 100%;
+            cursor: grab;
+        }
+        /* Page Transition */
+        body.fade-out {
+            opacity: 0;
+        }
+        /* Loading Screen Styles */
+        #loader-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #0a192f;
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            transition: opacity 0.5s ease-in-out;
+        }
+        #loader-text {
+            color: #64ffda;
+            font-family: 'Poppins', monospace;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            width: 300px;
+            text-align: center;
+        }
+        #progress-bar-container {
+            width: 300px;
+            height: 10px;
+            border: 1px solid #64ffda;
+            border-radius: 5px;
+        }
+        #progress-bar {
+            width: 0%;
+            height: 100%;
+            background-color: #64ffda;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="loader-overlay">
+        <div id="loader-text">Initializing... <span id="loader-percentage">0%</span></div>
+        <div id="progress-bar-container">
+            <div id="progress-bar"></div>
+        </div>
+    </div>
+
+    <canvas id="particle-canvas"></canvas>
+
+    <!-- Header & Navigation -->
+    <header class="bg-opacity-90 backdrop-blur-md fixed top-0 left-0 right-0 z-40 transition-all duration-300" id="navbar">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#hero" class="text-2xl font-bold accent-color">VV</a>
+            <ul class="hidden md:flex items-center space-x-8">
+                <li><a href="#about" class="nav-link">About</a></li>
+                <li><a href="#skills" class="nav-link">Skills</a></li>
+                <li><a href="#projects" class="nav-link">Projects</a></li>
+                <li><a href="#contact" class="nav-link">Contact</a></li>
+                <li><a href="https://drive.google.com/file/d/1E7ghV6KZhRQGfMS5RcFNsQZo4CFQgkYE/view" target="_blank" rel="noopener noreferrer" class="border border-accent text-accent px-4 py-2 rounded hover:bg-accent hover:bg-opacity-10 transition">Resume</a></li>
+            </ul>
+            <button id="mobile-menu-button" class="md:hidden">
+                <i data-lucide="menu"></i>
+            </button>
+        </nav>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden">
+             <ul class="flex flex-col items-center space-y-4 py-4">
+                <li><a href="#about" class="nav-link">About</a></li>
+                <li><a href="#skills" class="nav-link">Skills</a></li>
+                <li><a href="#projects" class="nav-link">Projects</a></li>
+                <li><a href="#contact" class="nav-link">Contact</a></li>
+                <li><a href="https://drive.google.com/file/d/1E7ghV6KZhRQGfMS5RcFNsQZo4CFQgkYE/view" target="_blank" rel="noopener noreferrer" class="border border-accent text-accent px-4 py-2 rounded hover:bg-accent hover:bg-opacity-10 transition">Resume</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6">
+        <!-- Hero Section -->
+        <section id="hero" class="scroll-section min-h-screen flex items-center">
+            <div>
+                <p class="text-lg accent-color mb-4">Hi, my name is</p>
+                <h1 class="text-4xl md:text-7xl font-bold text-slate-100">Vidushi Vashishth.</h1>
+                <h2 class="text-4xl md:text-6xl font-bold text-slate-400 mt-2">I bridge business and technology.</h2>
+                <p class="mt-6 max-w-xl">
+                    I'm a Business Analyst with a B.Tech in Computer Science, specializing in translating business needs into technical solutions. I thrive on data-driven insights and creating efficient systems that drive growth.
+                </p>
+                <div class="mt-8">
+                    <a href="#contact" class="bg-accent text-gray-900 font-bold py-3 px-8 rounded hover:bg-opacity-80 transition">Get In Touch</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="scroll-section min-h-screen flex flex-col justify-center py-24">
+            <div>
+                <h2 class="text-3xl font-bold section-heading mb-12">About Me</h2>
+                <div class="grid md:grid-cols-5 gap-12 items-center">
+                    <div class="md:col-span-3">
+                        <p class="mb-4">
+                            Hey there! I'm Vidushi — a curious and detail-loving techie who recently wrapped up her B.Tech in Computer Science. I’ve dabbled in everything from data analysis and AI research to mobile app development for 8,000+ users at the Gurugram Police HQ (true story!). I enjoy turning complex data into clear insights and collaborating with teams that love building cool, meaningful stuff.
+                        </p>
+                        <p class="mb-4">
+                            I bring along a blend of analytical thinking, solid coding skills (Python, SQL, Flutter, and more), and a decent sense of humor to every project. Whether it's securing databases or studying market trends, I love finding patterns and solutions that make an impact.
+                        </p>
+                        <p>
+                            If you think I’d be a great fit for your team, I’m excited to chat! <br>
+                            P.S. I might charge you an ice-cream if you hire me 🍦😉
+                        </p>
+                    </div>
+                    <div class="md:col-span-2 flex justify-center items-center">
+                        <div class="w-64 h-64 bg-accent rounded-md relative group">
+                            <img src="portfolioImage.png" alt="Your Name" class="rounded-md absolute w-full h-full object-cover transform -translate-x-4 -translate-y-4 border-4 border-accent">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Skills Section -->
+        <section id="skills" class="scroll-section min-h-screen flex flex-col justify-center py-24">
+            <div>
+                <h2 class="text-3xl font-bold section-heading mb-12">My Skillset</h2>
+                <div class="grid md:grid-cols-2 gap-12">
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4 text-slate-100">Business & Analysis</h3>
+                        <div class="flex flex-wrap gap-3">
+                            <span class="skill-tag">Requirement Gathering</span>
+                            <span class="skill-tag">Agile & Scrum</span>
+                            <span class="skill-tag">Stakeholder Management</span>
+                            <span class="skill-tag">Business Process Modeling</span>
+                            <span class="skill-tag">Data Analysis</span>
+                            <span class="skill-tag">Market Research</span>
+                            <span class="skill-tag">User Story Creation</span>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4 text-slate-100">Technical Skills</h3>
+                         <div class="flex flex-wrap gap-3">
+                            <span class="skill-tag">Python</span>
+                            <span class="skill-tag">SQL</span>
+                            <span class="skill-tag">Java</span>
+                            <span class="skill-tag">HTML & CSS</span>
+                            <span class="skill-tag">JavaScript</span>
+                            <span class="skill-tag">Tableau</span>
+                            <span class="skill-tag">Git & GitHub</span>
+                            <span class="skill-tag">JIRA</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section id="projects" class="scroll-section min-h-screen flex flex-col justify-center py-24">
+            <div>
+                <h2 class="text-3xl font-bold section-heading mb-12">Things I've Built</h2>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Project 1 -->
+                    <a href="project1.html" class="project-link project-card rounded-md p-6 flex flex-col no-underline">
+                        <div class="flex-grow">
+                            <div class="flex justify-between items-center mb-4">
+                                <i data-lucide="folder" class="accent-color"></i>
+                                <div class="space-x-2 text-slate-400">
+                                    <i data-lucide="external-link"></i>
+                                </div>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-100 mb-2">Leave Management Application</h3>
+                            <p class="text-sm text-slate-400">Developed a scalable leave management app for 8,000+ Gurugram Police officers, contributing to sprint planning, database design, and user testing in close coordination with the project team.</p>
+                        </div>
+                        <div class="mt-4 text-xs text-slate-400 font-mono">Flutter • Dart • Firebase</div>
+                    </a>
+                    <!-- Project 2 -->
+                    <a href="project2.html" class="project-link project-card rounded-md p-6 flex flex-col no-underline">
+                         <div class="flex-grow">
+                            <div class="flex justify-between items-center mb-4">
+                                <i data-lucide="folder" class="accent-color"></i>
+                                <div class="space-x-2 text-slate-400">
+                                    <i data-lucide="external-link"></i>
+                                </div>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-100 mb-2">Blockchain Development</h3>
+                            <p class="text-sm text-slate-400">Designed and deployed a secure digital ledger system, conducting in-depth research and testing through a simulated network environment.</p>
+                        </div>
+                        <div class="mt-4 text-xs text-slate-400 font-mono">SHA-512 Algorithm • Python • JSON</div>
+                    </a>
+                    <!-- Project 3 -->
+                    <a href="project3.html" class="project-link project-card rounded-md p-6 flex flex-col no-underline">
+                         <div class="flex-grow">
+                            <div class="flex justify-between items-center mb-4">
+                                <i data-lucide="folder" class="accent-color"></i>
+                                <div class="space-x-2 text-slate-400">
+                                    <i data-lucide="external-link"></i>
+                                </div>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-100 mb-2">UniSphere</h3>
+                            <p class="text-sm text-slate-400">Collaborated with the database security team to strengthen data access controls and enhance overall system security for an internal university platform.</p>
+                        </div>
+                        <div class="mt-4 text-xs text-slate-400 font-mono">Flutter • Firebase</div>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="scroll-section min-h-screen flex flex-col justify-center text-center">
+            <div class="flex-grow flex flex-col justify-center">
+                <h2 class="text-2xl font-semibold accent-color mb-2">What's Next?</h2>
+                <h3 class="text-4xl font-bold text-slate-100 mb-4">Get In Touch</h3>
+                <p class="max-w-xl mx-auto mb-8">
+                    I'm currently open to new opportunities and would love to hear from you. Whether you have a question or just want to say hi, feel free to reach out!
+                </p>
+                <button id="contact-btn" class="bg-transparent border border-accent text-accent font-bold py-3 px-8 rounded hover:bg-accent hover:bg-opacity-10 transition mx-auto">
+                    Say Hello
+                </button>
+            </div>
+            <footer class="text-center py-6 text-slate-400 text-sm">
+                <p>Designed by VIDUSHI VASHISHTH</p>
+            </footer>
+        </section>
+    </main>
+
+    <!-- Auto-Scroll Progress Arrow -->
+    <div id="scroll-indicator" class="fixed bottom-8 right-8 z-50">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- The track for the arrow -->
+            <path id="track-arrow" d="M12 19V5M12 19L17 14M12 19L7 14" stroke="#233554" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- The filling progress arrow -->
+            <path id="progress-arrow" d="M12 19V5M12 19L17 14M12 19L7 14" stroke="#64ffda" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>
+        </svg>
+    </div>
+
+    <!-- Contact Modal -->
+    <div id="contact-modal" class="hidden fixed inset-0 z-50 modal-overlay flex justify-center items-center p-4">
+        <div class="modal-content w-full max-w-md rounded-lg shadow-xl p-8 relative">
+            <button id="close-modal-btn" class="absolute top-4 right-4 text-slate-400 hover:text-accent-color transition">
+                <i data-lucide="x"></i>
+            </button>
+            <h3 class="text-2xl font-bold text-slate-100 mb-6">Contact Information</h3>
+            <div class="space-y-5">
+                <div class="flex items-center text-lg">
+                    <i data-lucide="mail" class="accent-color mr-4 flex-shrink-0"></i>
+                    <a href="mailto:vvidushi41@gmail.com" class="text-slate-300 hover:text-accent-color transition break-all">vvidushi41@gmail.com</a>
+                </div>
+                <div class="flex items-center text-lg">
+                    <i data-lucide="phone" class="accent-color mr-4 flex-shrink-0"></i>
+                    <a href="tel:+918630841488" class="text-slate-300 hover:text-accent-color transition">+91 86308 41488</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Mobile Menu Toggle
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+        
+        document.querySelectorAll('#mobile-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                 mobileMenu.classList.add('hidden');
+            });
+        });
+
+        // Navbar shadow on scroll
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('shadow-lg', 'bg-gray-900');
+            } else {
+                navbar.classList.remove('shadow-lg', 'bg-gray-900');
+            }
+        });
+
+        // Contact Modal Logic
+        const contactModal = document.getElementById('contact-modal');
+        const contactBtn = document.getElementById('contact-btn');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+
+        contactBtn.addEventListener('click', () => {
+            contactModal.classList.remove('hidden');
+        });
+
+        closeModalBtn.addEventListener('click', () => {
+            contactModal.classList.add('hidden');
+        });
+
+        contactModal.addEventListener('click', (e) => {
+            if (e.target === contactModal) {
+                contactModal.classList.add('hidden');
+            }
+        });
+
+        // === Particle Background Logic ===
+        function initParticleAnimation() {
+            const canvas = document.getElementById('particle-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            let particlesArray;
+
+            const mouse = {
+                x: null,
+                y: null,
+                radius: 150
+            };
+
+            window.addEventListener('mousemove', (event) => {
+                mouse.x = event.x;
+                mouse.y = event.y;
+            });
+
+            class Particle {
+                constructor(x, y, directionX, directionY, size, color) {
+                    this.x = x;
+                    this.y = y;
+                    this.directionX = directionX;
+                    this.directionY = directionY;
+                    this.size = size;
+                    this.color = color;
+                }
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
+                    ctx.fillStyle = 'rgba(100, 255, 218, 0.25)'; // Reduced opacity
+                    ctx.fill();
+                }
+                update() {
+                    if (this.x > canvas.width || this.x < 0) {
+                        this.directionX = -this.directionX;
+                    }
+                    if (this.y > canvas.height || this.y < 0) {
+                        this.directionY = -this.directionY;
+                    }
+                    this.x += this.directionX;
+                    this.y += this.directionY;
+                    this.draw();
+                }
+            }
+
+            function initParticles() {
+                particlesArray = [];
+                let numberOfParticles = (canvas.height * canvas.width) / 9000;
+                for (let i = 0; i < numberOfParticles; i++) {
+                    let size = (Math.random() * 2) + 1;
+                    let x = (Math.random() * ((innerWidth - size * 2) - (size * 2)) + size * 2);
+                    let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
+                    let directionX = (Math.random() * .4) - .2;
+                    let directionY = (Math.random() * .4) - .2;
+                    let color = '#64ffda';
+                    particlesArray.push(new Particle(x, y, directionX, directionY, size, color));
+                }
+            }
+
+            function connect() {
+                let opacityValue = 1;
+                for (let a = 0; a < particlesArray.length; a++) {
+                    for (let b = a; b < particlesArray.length; b++) {
+                        let distance = ((particlesArray[a].x - particlesArray[b].x) * (particlesArray[a].x - particlesArray[b].x)) +
+                            ((particlesArray[a].y - particlesArray[b].y) * (particlesArray[a].y - particlesArray[b].y));
+                        if (distance < (canvas.width / 7) * (canvas.height / 7)) {
+                            opacityValue = 1 - (distance / 25000); // Faster fade
+                            ctx.strokeStyle = `rgba(100, 255, 218, ${opacityValue * 0.5})`; // Reduced max opacity
+                            ctx.lineWidth = 1;
+                            ctx.beginPath();
+                            ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
+                            ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
+                            ctx.stroke();
+                        }
+                    }
+                }
+            }
+            
+            function animateParticles() {
+                requestAnimationFrame(animateParticles);
+                ctx.clearRect(0, 0, innerWidth, innerHeight);
+                for (let i = 0; i < particlesArray.length; i++) {
+                    particlesArray[i].update();
+                }
+                connect();
+            }
+
+            window.addEventListener('resize', () => {
+                canvas.width = innerWidth;
+                canvas.height = innerHeight;
+                initParticles();
+            });
+
+            initParticles();
+            animateParticles();
+        }
+
+
+        // === Three.js 3D Object Logic ===
+        function init3DAnimation() {
+            const container = document.getElementById('three-container');
+            if (!container) return;
+
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            container.appendChild(renderer.domElement);
+
+            const geometry = new THREE.IcosahedronGeometry(2, 0);
+            const material = new THREE.MeshStandardMaterial({
+                color: 0x64ffda,
+                emissive: 0x64ffda,
+                emissiveIntensity: 0.5,
+                wireframe: true,
+            });
+            const orb = new THREE.Mesh(geometry, material);
+            scene.add(orb);
+
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
+            scene.add(ambientLight);
+            const pointLight = new THREE.PointLight(0xffffff, 1);
+            pointLight.position.set(5, 5, 5);
+            scene.add(pointLight);
+
+            camera.position.z = 5;
+
+            let isDragging = false;
+            let previousMousePosition = { x: 0, y: 0 };
+
+            container.addEventListener('mousedown', (e) => { isDragging = true; });
+            container.addEventListener('mouseup', (e) => { isDragging = false; });
+            container.addEventListener('mouseleave', (e) => { isDragging = false; });
+            container.addEventListener('mousemove', (e) => {
+                if (isDragging) {
+                    const deltaMove = {
+                        x: e.offsetX - previousMousePosition.x,
+                        y: e.offsetY - previousMousePosition.y
+                    };
+                    orb.rotation.y += deltaMove.x * 0.005;
+                    orb.rotation.x += deltaMove.y * 0.005;
+                }
+                previousMousePosition = { x: e.offsetX, y: e.offsetY };
+            });
+
+            function animate() {
+                requestAnimationFrame(animate);
+                if (!isDragging) {
+                    orb.rotation.x += 0.001;
+                    orb.rotation.y += 0.001;
+                }
+                renderer.render(scene, camera);
+            }
+            animate();
+
+            window.addEventListener('resize', () => {
+                camera.aspect = container.clientWidth / container.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(container.clientWidth, container.clientHeight);
+            });
+        }
+
+        // === Page Transition Logic ===
+        function initPageTransitions() {
+            const projectLinks = document.querySelectorAll('.project-link');
+            projectLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const destination = this.href;
+                    document.body.classList.add('fade-out');
+                    setTimeout(() => {
+                        window.location.href = destination;
+                    }, 500); // Match CSS transition time
+                });
+            });
+        }
+
+        // === Main Initialization Logic ===
+        function startMainContent() {
+            initParticleAnimation(); 
+            init3DAnimation(); 
+            initPageTransitions(); 
+
+            // Auto-Scroll, Snap-Scroll, & Progress Arrow Logic
+            const sections = Array.from(document.querySelectorAll('.scroll-section'));
+            let currentSectionIndex = 0;
+            const scrollInterval = 15000;
+
+            const scrollIndicator = document.getElementById('scroll-indicator');
+            const trackArrowPath = document.getElementById('track-arrow');
+            const progressArrowPath = document.getElementById('progress-arrow');
+            
+            let autoScrollTimer;
+            let userInteractionTimeout;
+
+            function setArrowDirection(direction) {
+                const downPath = "M12 19V5M12 19L17 14M12 19L7 14";
+                const upPath = "M12 5V19M12 5L17 10M12 5L7 10";
+                const newPath = direction === 'up' ? upPath : downPath;
+                trackArrowPath.setAttribute('d', newPath);
+                progressArrowPath.setAttribute('d', newPath);
+            }
+
+            function startProgressAnimation() {
+                const pathLength = progressArrowPath.getTotalLength();
+                progressArrowPath.style.transition = 'none';
+                progressArrowPath.style.strokeDasharray = pathLength + ' ' + pathLength;
+                progressArrowPath.style.strokeDashoffset = pathLength;
+                progressArrowPath.getBoundingClientRect();
+                progressArrowPath.style.transition = `stroke-dashoffset ${scrollInterval / 1000}s linear`;
+                progressArrowPath.style.strokeDashoffset = '0';
+            }
+
+            function autoScrollToNextSection() {
+                currentSectionIndex = (currentSectionIndex + 1) % sections.length;
+                sections[currentSectionIndex].scrollIntoView({ behavior: 'smooth' });
+            }
+
+            function startAutoScroll() {
+                clearInterval(autoScrollTimer);
+                startProgressAnimation();
+                autoScrollTimer = setInterval(autoScrollToNextSection, scrollInterval);
+            }
+
+            function pauseAutoScroll() {
+                clearInterval(autoScrollTimer);
+                clearTimeout(userInteractionTimeout);
+                const computedStyle = window.getComputedStyle(progressArrowPath);
+                const currentOffset = computedStyle.getPropertyValue('stroke-dashoffset');
+                progressArrowPath.style.transition = 'none';
+                progressArrowPath.style.strokeDashoffset = currentOffset;
+                userInteractionTimeout = setTimeout(startAutoScroll, 5000);
+            }
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const visibleSectionId = entry.target.id;
+                        const newIndex = sections.findIndex(sec => sec.id === visibleSectionId);
+                        if (newIndex !== -1) {
+                            currentSectionIndex = newIndex;
+                            setArrowDirection(currentSectionIndex === sections.length - 1 ? 'up' : 'down');
+                        }
+                    }
+                });
+            }, { threshold: 0.7 });
+
+            sections.forEach(sec => observer.observe(sec));
+            
+            function handleClickScroll() {
+                clearInterval(autoScrollTimer);
+                autoScrollToNextSection();
+                autoScrollTimer = setInterval(autoScrollToNextSection, scrollInterval);
+            }
+
+            scrollIndicator.addEventListener('click', handleClickScroll);
+            startAutoScroll();
+            window.addEventListener('wheel', pauseAutoScroll, { passive: true });
+            window.addEventListener('touchstart', pauseAutoScroll, { passive: true });
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', pauseAutoScroll);
+            });
+        }
+
+        // === Loading Screen Logic ===
+        window.addEventListener('load', () => {
+            const loaderOverlay = document.getElementById('loader-overlay');
+            if (window.location.hash) {
+                // If there's a hash, skip the loader immediately
+                loaderOverlay.style.display = 'none';
+                startMainContent();
+            } else {
+                // Otherwise, run the loader animation
+                const loaderText = document.getElementById('loader-text');
+                const percentageText = document.getElementById('loader-percentage');
+                const progressBar = document.getElementById('progress-bar');
+                const loadingMessages = [
+                    "Booting up...",
+                    "Calibrating quantum matrix...",
+                    "Establishing neural link...",
+                    "Reticulating splines...",
+                    "Compiling awesomeness...",
+                    "Almost there..."
+                ];
+                
+                let currentProgress = 0;
+                const totalDuration = Math.random() * 5000 + 10000; // 10-15 seconds
+                let startTime = Date.now();
+                let messageIndex = 0;
+
+                const textInterval = setInterval(() => {
+                    messageIndex++;
+                    if (messageIndex < loadingMessages.length) {
+                        loaderText.childNodes[0].nodeValue = loadingMessages[messageIndex] + ' ';
+                    }
+                }, totalDuration / loadingMessages.length);
+
+                function updateLoader() {
+                    const elapsedTime = Date.now() - startTime;
+                    const targetProgress = (elapsedTime / totalDuration) * 100;
+                    
+                    let speedFactor = 0.1; // Easing factor
+                    if ((currentProgress > 25 && currentProgress < 40) || (currentProgress > 65 && currentProgress < 85)) {
+                        speedFactor = 0.01; // Slow down
+                    }
+
+                    currentProgress += (targetProgress - currentProgress) * speedFactor;
+
+                    if (currentProgress >= 99.9) {
+                        currentProgress = 100;
+                        clearInterval(textInterval);
+                        loaderText.childNodes[0].nodeValue = "Welcome. ";
+                        progressBar.style.width = '100%';
+                        percentageText.textContent = '100%';
+
+                        setTimeout(() => {
+                            loaderOverlay.style.opacity = '0';
+                            setTimeout(() => {
+                                loaderOverlay.style.display = 'none';
+                                startMainContent();
+                            }, 500);
+                        }, 500);
+                        return;
+                    }
+
+                    progressBar.style.width = currentProgress + '%';
+                    percentageText.textContent = Math.floor(currentProgress) + '%';
+                    requestAnimationFrame(updateLoader);
+                }
+                requestAnimationFrame(updateLoader);
+            }
+        });
+    </script>
+</body>
+</html>

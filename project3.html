@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Detail | UniSphere</title>
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230a192f'/%3E%3Ctext x='50' y='68' font-size='50' font-family='Poppins, sans-serif' font-weight='700' fill='%2364ffda' text-anchor='middle'%3EVV%3C/text%3E%3C/svg%3E">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #0a192f; /* Dark Navy */
+            color: #ccd6f6; /* Light Slate */
+        }
+        .accent-color {
+            color: #64ffda; /* Bright Aqua/Teal */
+        }
+        .bg-accent {
+            background-color: #64ffda;
+        }
+        .border-accent {
+            border-color: #64ffda;
+        }
+        .section-heading::after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 2px;
+            background: #64ffda;
+            margin-top: 8px;
+        }
+        .tech-tag {
+             background-color: #112240;
+             color: #64ffda;
+             padding: 4px 12px;
+             border-radius: 16px;
+             font-size: 0.875rem;
+             font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <main class="container mx-auto px-6 py-12 md:py-24">
+        
+        <!-- Back Button -->
+        <div class="mb-12">
+            <a href="index.html#projects" class="inline-flex items-center text-accent-color hover:underline">
+                <i data-lucide="arrow-left" class="mr-2"></i>
+                Back to Portfolio
+            </a>
+        </div>
+
+        <!-- Project Header -->
+        <section class="mb-16">
+            <p class="text-lg accent-color mb-2">Cybersecurity & App Development | Feb 2023 - Aug 2024</p>
+            <h1 class="text-4xl md:text-6xl font-bold text-slate-100">UniSphere Application Security</h1>
+            <p class="mt-6 max-w-3xl">
+                A project at BML Munjal University focused on enhancing the security of the UniSphere application by implementing robust database access controls.
+            </p>
+        </section>
+
+        <!-- Project Details -->
+        <section class="grid md:grid-cols-3 gap-12">
+            <!-- Left Column for Details -->
+            <div class="md:col-span-2">
+                <h2 class="text-3xl font-bold section-heading mb-6">Project Overview</h2>
+                <p class="mb-4">
+                    In my role as a Cyber Security Analyst for the UniSphere application, I coordinated directly with the database security department to identify and mitigate potential vulnerabilities. The primary objective was to secure user data and enforce strict permissions within the application's backend.
+                </p>
+                <p class="mb-4">
+                    My main responsibility was the implementation of a comprehensive access control feature using Firebase's Security Rules language. This involved writing a complex ruleset to define which users could read, write, or update specific documents and collections in the Firestore database.
+                </p>
+                <p>
+                   The rules were designed to be both secure and scalable, ensuring that as the application grew, the data remained protected against unauthorized access. This initiative significantly hardened the application's security posture and protected sensitive user information.
+                </p>
+            </div>
+
+            <!-- Right Column for Tech Stack -->
+            <div class="md:col-span-1">
+                <div class="bg-gray-900 bg-opacity-50 rounded-lg p-6">
+                    <h3 class="text-xl font-semibold mb-4 text-slate-100">Technologies & Skills</h3>
+                    <div class="flex flex-wrap gap-3">
+                        <span class="tech-tag">Flutter</span>
+                        <span class="tech-tag">Firebase</span>
+                        <span class="tech-tag">Firebase Security Rules</span>
+                        <span class="tech-tag">Cybersecurity Analysis</span>
+                        <span class="tech-tag">Access Control</span>
+                        <span class="tech-tag">Database Security</span>
+                    </div>
+                    <div class="mt-6">
+                        <a href="#" class="inline-flex items-center text-accent-color hover:underline font-semibold">
+                            View on GitHub <i data-lucide="github" class="ml-2 h-5 w-5"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="text-center py-6 text-slate-400 text-sm">
+        <p>Designed by VIDUSHI VASHISHTH</p>
+    </footer>
+
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+    </script>
+
+</body>
+</html>
