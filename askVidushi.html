@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ask Vidushi | AI Assistant</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230a192f'/%3E%3Ctext x='50' y='68' font-size='50' font-family='Poppins, sans-serif' font-weight='700' fill='%2364ffda' text-anchor='middle'%3EVV%3C/text%3E%3C/svg%3E">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #0a192f;
+            color: #ccd6f6;
+        }
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        .accent-color { color: #64ffda; }
+        .chat-window {
+            background-color: rgba(17, 34, 64, 0.75);
+            backdrop-filter: blur(10px);
+            border: 1px solid #233554;
+        }
+        .user-msg {
+            background-color: #64ffda;
+            color: #0a192f;
+        }
+        .bot-msg {
+            background-color: #233554;
+        }
+        .chat-input {
+            background-color: #112240;
+            border: 1px solid #233554;
+            color: #ccd6f6;
+        }
+        .chat-input:focus {
+            outline: none;
+            border-color: #64ffda;
+        }
+    </style>
+</head>
+<body class="flex flex-col h-screen">
+    <canvas id="particle-canvas"></canvas>
+
+    <header class="w-full">
+        <div class="container mx-auto px-6 py-4">
+             <a href="index.html#hero" class="inline-flex items-center text-accent-color hover:underline">
+                <i data-lucide="arrow-left" class="mr-2"></i>
+                Back to Portfolio
+            </a>
+        </div>
+    </header>
+
+    <main class="flex-grow flex flex-col items-center p-4 overflow-hidden">
+        <div class="chat-window w-full max-w-2xl h-full flex flex-col rounded-lg shadow-2xl">
+            <!-- Chat Header -->
+            <div class="p-4 border-b border-slate-700">
+                <h1 class="text-xl font-bold text-center accent-color">Ask Vidushi</h1>
+                <p class="text-sm text-center text-slate-400">Your AI assistant for all things Vidushi.</p>
+            </div>
+            
+            <!-- Messages -->
+            <div id="chat-messages" class="flex-grow p-4 space-y-4 overflow-y-auto">
+                <!-- Initial Bot Message -->
+                <div class="flex justify-start">
+                    <div class="bot-msg p-3 rounded-lg max-w-xs lg:max-w-md">
+                        <p>Hello! I'm Vidushi's AI assistant. Feel free to ask me about her skills, experience, or projects. How can I help you today?</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Input Form -->
+            <div class="p-4 border-t border-slate-700">
+                <form id="chat-form" class="flex space-x-2">
+                    <input type="text" id="user-input" placeholder="Type your message..." class="flex-grow p-2 rounded-md chat-input">
+                    <button type="submit" class="bg-accent text-gray-900 font-bold p-2 rounded-md hover:bg-opacity-80 transition">
+                        <i data-lucide="send"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        lucide.createIcons();
+
+        // === Particle Background Logic (same as main page) ===
+        function initParticleAnimation() {
+            const canvas = document.getElementById('particle-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            let particlesArray;
+            class Particle {
+                constructor(x, y, directionX, directionY, size) {
+                    this.x = x; this.y = y; this.directionX = directionX; this.directionY = directionY; this.size = size;
+                }
+                draw() {
+                    ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false); ctx.fillStyle = 'rgba(100, 255, 218, 0.25)'; ctx.fill();
+                }
+                update() {
+                    if (this.x > canvas.width || this.x < 0) { this.directionX = -this.directionX; }
+                    if (this.y > canvas.height || this.y < 0) { this.directionY = -this.directionY; }
+                    this.x += this.directionX; this.y += this.directionY; this.draw();
+                }
+            }
+            function initParticles() {
+                particlesArray = [];
+                let numberOfParticles = (canvas.height * canvas.width) / 9000;
+                for (let i = 0; i < numberOfParticles; i++) {
+                    let size = (Math.random() * 2) + 1;
+                    let x = (Math.random() * ((innerWidth - size * 2) - (size * 2)) + size * 2);
+                    let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
+                    let directionX = (Math.random() * .4) - .2; let directionY = (Math.random() * .4) - .2;
+                    particlesArray.push(new Particle(x, y, directionX, directionY, size));
+                }
+            }
+            function connect() {
+                let opacityValue = 1;
+                for (let a = 0; a < particlesArray.length; a++) {
+                    for (let b = a; b < particlesArray.length; b++) {
+                        let distance = ((particlesArray[a].x - particlesArray[b].x) * (particlesArray[a].x - particlesArray[b].x)) + ((particlesArray[a].y - particlesArray[b].y) * (particlesArray[a].y - particlesArray[b].y));
+                        if (distance < (canvas.width / 7) * (canvas.height / 7)) {
+                            opacityValue = 1 - (distance / 25000);
+                            ctx.strokeStyle = `rgba(100, 255, 218, ${opacityValue * 0.5})`; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(particlesArray[a].x, particlesArray[a].y); ctx.lineTo(particlesArray[b].x, particlesArray[b].y); ctx.stroke();
+                        }
+                    }
+                }
+            }
+            function animateParticles() {
+                requestAnimationFrame(animateParticles); ctx.clearRect(0, 0, innerWidth, innerHeight);
+                for (let i = 0; i < particlesArray.length; i++) { particlesArray[i].update(); }
+                connect();
+            }
+            window.addEventListener('resize', () => {
+                canvas.width = innerWidth; canvas.height = innerHeight; initParticles();
+            });
+            initParticles(); animateParticles();
+        }
+        initParticleAnimation();
+
+        // === Chatbot Logic ===
+        const chatForm = document.getElementById('chat-form');
+        const userInput = document.getElementById('user-input');
+        const chatMessages = document.getElementById('chat-messages');
+
+        const knowledgeBase = {
+            "hello": "Hi there! How can I help you learn more about Vidushi?",
+            "hi": "Hello! Ask me anything about Vidushi's portfolio.",
+            "who are you": "I am Vidushi's AI assistant, built to answer your questions based on her portfolio.",
+            "skills": "Vidushi has g mix of Business & Analysis skills like Requirement Gathering and Agile, and Technical skills like Python, SQL, Java, and Flutter. Is there a specific skill you'd like to know more about?",
+            "experience": "Vidushi has gained valuable experience as a Business Analyst Intern at Nebula9.AI, where she contributed to AI and LLM-focused research, conducted market and competitive analysis, and supported the development of client-facing dashboards. Her work involved identifying data patterns, gathering business requirements, and collaborating with cross-functional teams to deliver actionable insights. Through these experiences, she has honed her analytical thinking, communication, and teamwork skills, preparing her for dynamic roles in tech and business domains.",
+            "projects": "Vidushi has worked on several exciting projects, including a Leave Management App for the Gurugram Police, a Blockchain Development project, and enhancing security for the UniSphere university app. Which one interests you?",
+            "contact": "You can reach Vidushi at vvidushi41@gmail.com or by phone at +91 86308 41488. I can't set up a meeting, but I highly recommend you get in touch!",
+            "education": "Vidushi is pursuing her B.Tech in Computer Science at BML Munjal University. She completed her higher education at The Aryan International School.",
+            "resume": "You can view her resume by clicking the 'Resume' button on the main portfolio page. It will open in a new tab.",
+            "leave management": "That was a Flutter app for the Gurugram Police, designed for over 8,000 officers. Vidushi worked on sprint planning, database design, and user testing.",
+            "blockchain": "She developed and deployed a blockchain using the SHA-512 algorithm on a decentralized peer-to-peer network. It was a deep dive into the technology using Python and JSON.",
+            "unisphere": "For the UniSphere project, Vidushi worked as a Cyber Security Analyst, implementing access control features on Firebase using its security rules language to protect user data.",
+            "thank you": "You're welcome! Is there anything else I can help you with?",
+            "bye": "Goodbye! Have a great day."
+        };
+
+        function getBotResponse(userText) {
+            userText = userText.toLowerCase().trim();
+            let bestMatch = null;
+            let highestScore = 0;
+
+            for (const keyword in knowledgeBase) {
+                if (userText.includes(keyword)) {
+                    const score = keyword.length; // Simple scoring based on keyword length
+                    if (score > highestScore) {
+                        highestScore = score;
+                        bestMatch = knowledgeBase[keyword];
+                    }
+                }
+            }
+            return bestMatch || "I'm not sure how to answer that. Try asking about Vidushi's 'skills', 'experience', or 'projects'.";
+        }
+
+        function appendMessage(message, sender) {
+            const messageWrapper = document.createElement('div');
+            messageWrapper.classList.add('flex', sender === 'user' ? 'justify-end' : 'justify-start');
+            
+            const messageElement = document.createElement('div');
+            messageElement.classList.add(sender === 'user' ? 'user-msg' : 'bot-msg', 'p-3', 'rounded-lg', 'max-w-xs', 'lg:max-w-md');
+            messageElement.innerHTML = `<p>${message}</p>`;
+            
+            messageWrapper.appendChild(messageElement);
+            chatMessages.appendChild(messageWrapper);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        chatForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const userText = userInput.value.trim();
+            if (!userText) return;
+
+            appendMessage(userText, 'user');
+            userInput.value = '';
+
+            setTimeout(() => {
+                const botResponse = getBotResponse(userText);
+                appendMessage(botResponse, 'bot');
+            }, 1000); // Simulate typing delay
+        });
+    </script>
+</body>
+</html>
