@@ -10,8 +10,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- Three.js Library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <style>
         body {
@@ -85,12 +83,6 @@
         #scroll-indicator {
             cursor: pointer;
         }
-        /* 3D Canvas Container */
-        #three-container {
-            width: 100%;
-            height: 100%;
-            cursor: grab;
-        }
         /* Page Transition */
         body.fade-out {
             opacity: 0;
@@ -130,6 +122,62 @@
             background-color: #64ffda;
             border-radius: 5px;
         }
+        /* Experience Timeline */
+        .timeline {
+            position: relative;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .timeline::after {
+            content: '';
+            position: absolute;
+            width: 6px;
+            background-color: #233554;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            margin-left: -3px;
+        }
+        .timeline-container {
+            padding: 10px 40px;
+            position: relative;
+            background-color: inherit;
+            width: 50%;
+        }
+        .timeline-container.left {
+            left: 0;
+        }
+        .timeline-container.right {
+            left: 50%;
+        }
+        .timeline-container::after {
+            content: '';
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            right: -17px;
+            background-color: #0a192f;
+            border: 4px solid #64ffda;
+            top: 15px;
+            border-radius: 50%;
+            z-index: 1;
+        }
+        .timeline-container.right::after {
+            left: -16px;
+        }
+        .timeline-content {
+            padding: 20px 30px;
+            background-color: #112240;
+            position: relative;
+            border-radius: 6px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .timeline-content.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
     </style>
 </head>
 <body>
@@ -148,10 +196,12 @@
             <a href="#hero" class="text-2xl font-bold accent-color">VV</a>
             <ul class="hidden md:flex items-center space-x-8">
                 <li><a href="#about" class="nav-link">About</a></li>
+                <li><a href="#experience" class="nav-link">Experience</a></li>
                 <li><a href="#skills" class="nav-link">Skills</a></li>
                 <li><a href="#projects" class="nav-link">Projects</a></li>
                 <li><a href="#contact" class="nav-link">Contact</a></li>
                 <li><a href="https://drive.google.com/file/d/1E7ghV6KZhRQGfMS5RcFNsQZo4CFQgkYE/view" target="_blank" rel="noopener noreferrer" class="border border-accent text-accent px-4 py-2 rounded hover:bg-accent hover:bg-opacity-10 transition">Resume</a></li>
+                <li><a href="askVidushi.html" rel="noopener noreferrer" class="border border-accent text-accent px-4 py-2 rounded hover:bg-accent hover:bg-opacity-10 transition">Ask Vidushi</a></li>
             </ul>
             <button id="mobile-menu-button" class="md:hidden">
                 <i data-lucide="menu"></i>
@@ -161,10 +211,12 @@
         <div id="mobile-menu" class="hidden md:hidden">
              <ul class="flex flex-col items-center space-y-4 py-4">
                 <li><a href="#about" class="nav-link">About</a></li>
+                <li><a href="#experience" class="nav-link">Experience</a></li>
                 <li><a href="#skills" class="nav-link">Skills</a></li>
                 <li><a href="#projects" class="nav-link">Projects</a></li>
                 <li><a href="#contact" class="nav-link">Contact</a></li>
                 <li><a href="https://drive.google.com/file/d/1E7ghV6KZhRQGfMS5RcFNsQZo4CFQgkYE/view" target="_blank" rel="noopener noreferrer" class="border border-accent text-accent px-4 py-2 rounded hover:bg-accent hover:bg-opacity-10 transition">Resume</a></li>
+                <li><a href="askVidushi.html" rel="noopener noreferrer" class="border border-accent text-accent px-4 py-2 rounded hover:bg-accent hover:bg-opacity-10 transition">Ask Vidushi</a></li>
             </ul>
         </div>
     </header>
@@ -204,7 +256,41 @@
                     </div>
                     <div class="md:col-span-2 flex justify-center items-center">
                         <div class="w-64 h-64 bg-accent rounded-md relative group">
-                            <img src="portfolioImage.png" alt="Your Name" class="rounded-md absolute w-full h-full object-cover transform -translate-x-4 -translate-y-4 border-4 border-accent">
+                             <img src="portfolioImage.png" alt="Vidushi Vashishth" class="rounded-md absolute w-full h-full object-cover transform -translate-x-4 -translate-y-4 border-4 border-accent">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Experience Section -->
+        <section id="experience" class="scroll-section min-h-screen flex flex-col justify-center py-24">
+            <div>
+                <h2 class="text-3xl font-bold section-heading mb-12 text-center">My Journey</h2>
+                <div class="timeline">
+                    <div class="timeline-container left">
+                        <div class="timeline-content">
+                            <h3 class="text-xl font-bold accent-color">Associate Consultant - Business Analyst</h3>
+                            <p class="text-sm text-slate-400 mb-2">Aug 2025 - Present | Nebula9.ai</p>
+                            <p>Working closely with project and engineering teams of Nebula9.ai on key deliverables.</p>
+                            <div class="flex flex-wrap gap-2 mt-3">
+                                <span class="skill-tag text-xs">Client Dealing</span>
+                                <span class="skill-tag text-xs">Research and Documentation</span>
+                                <span class="skill-tag text-xs">Figma</span>
+                                <span class="skill-tag text-xs">Canva</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="timeline-container right">
+                        <div class="timeline-content">
+                            <h3 class="text-xl font-bold accent-color">Innovation Engineer - Business Analyst</h3>
+                            <p class="text-sm text-slate-400 mb-2">Oct 2024 - July 2025 | Intern | Nebula9.ai</p>
+                            <p>Conducted market research and supported AI strategy through data analysis, cross-team collaboration, and development of client-facing dashboards.</p>
+                             <div class="flex flex-wrap gap-2 mt-3">
+                                <span class="skill-tag text-xs">Research</span>
+                                <span class="skill-tag text-xs">Python</span>
+                                <span class="skill-tag text-xs">AI/ML</span>
+                             </div>
                         </div>
                     </div>
                 </div>
@@ -309,7 +395,7 @@
                 </button>
             </div>
             <footer class="text-center py-6 text-slate-400 text-sm">
-                <p>Designed by VIDUSHI VASHISHTH</p>
+                <p>Designed & Built by VIDUSHI VASHISHTH</p>
             </footer>
         </section>
     </main>
@@ -490,71 +576,6 @@
             animateParticles();
         }
 
-
-        // === Three.js 3D Object Logic ===
-        function init3DAnimation() {
-            const container = document.getElementById('three-container');
-            if (!container) return;
-
-            const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
-            const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-            renderer.setSize(container.clientWidth, container.clientHeight);
-            container.appendChild(renderer.domElement);
-
-            const geometry = new THREE.IcosahedronGeometry(2, 0);
-            const material = new THREE.MeshStandardMaterial({
-                color: 0x64ffda,
-                emissive: 0x64ffda,
-                emissiveIntensity: 0.5,
-                wireframe: true,
-            });
-            const orb = new THREE.Mesh(geometry, material);
-            scene.add(orb);
-
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
-            scene.add(ambientLight);
-            const pointLight = new THREE.PointLight(0xffffff, 1);
-            pointLight.position.set(5, 5, 5);
-            scene.add(pointLight);
-
-            camera.position.z = 5;
-
-            let isDragging = false;
-            let previousMousePosition = { x: 0, y: 0 };
-
-            container.addEventListener('mousedown', (e) => { isDragging = true; });
-            container.addEventListener('mouseup', (e) => { isDragging = false; });
-            container.addEventListener('mouseleave', (e) => { isDragging = false; });
-            container.addEventListener('mousemove', (e) => {
-                if (isDragging) {
-                    const deltaMove = {
-                        x: e.offsetX - previousMousePosition.x,
-                        y: e.offsetY - previousMousePosition.y
-                    };
-                    orb.rotation.y += deltaMove.x * 0.005;
-                    orb.rotation.x += deltaMove.y * 0.005;
-                }
-                previousMousePosition = { x: e.offsetX, y: e.offsetY };
-            });
-
-            function animate() {
-                requestAnimationFrame(animate);
-                if (!isDragging) {
-                    orb.rotation.x += 0.001;
-                    orb.rotation.y += 0.001;
-                }
-                renderer.render(scene, camera);
-            }
-            animate();
-
-            window.addEventListener('resize', () => {
-                camera.aspect = container.clientWidth / container.clientHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(container.clientWidth, container.clientHeight);
-            });
-        }
-
         // === Page Transition Logic ===
         function initPageTransitions() {
             const projectLinks = document.querySelectorAll('.project-link');
@@ -570,11 +591,30 @@
             });
         }
 
+        // === Timeline Animation Logic ===
+        function initTimelineAnimation() {
+            const timelineItems = document.querySelectorAll('.timeline-content');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    } else {
+                        entry.target.classList.remove('visible');
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+            timelineItems.forEach(item => {
+                observer.observe(item);
+            });
+        }
+
         // === Main Initialization Logic ===
         function startMainContent() {
             initParticleAnimation(); 
-            init3DAnimation(); 
             initPageTransitions(); 
+            initTimelineAnimation();
 
             // Auto-Scroll, Snap-Scroll, & Progress Arrow Logic
             const sections = Array.from(document.querySelectorAll('.scroll-section'));
